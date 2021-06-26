@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	pref "google.golang.org/protobuf/reflect/protoreflect"
@@ -17,7 +18,7 @@ func makeFileDescriptor() pref.FileDescriptor {
 		Package: proto.String("example"),
 		MessageType: []*descriptorpb.DescriptorProto{
 			// define Foo message
-			&descriptorpb.DescriptorProto{
+			{
 				Name: proto.String("Foo"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
@@ -36,7 +37,7 @@ func makeFileDescriptor() pref.FileDescriptor {
 			},
 
 			// define Bar message
-			&descriptorpb.DescriptorProto{
+			{
 				Name: proto.String("Bar"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
@@ -75,7 +76,7 @@ func makeFileDescriptor() pref.FileDescriptor {
 			},
 
 			// define Baz message
-			&descriptorpb.DescriptorProto{
+			{
 				Name: proto.String("Baz"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
