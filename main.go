@@ -5,12 +5,12 @@ import (
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
-	pref "google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
 )
 
-func makeFileDescriptor() pref.FileDescriptor {
+func makeFileDescriptor() protoreflect.FileDescriptor {
 	// make FileDescriptorProto
 	pb := &descriptorpb.FileDescriptorProto{
 		Syntax:  proto.String("proto3"),
@@ -25,13 +25,13 @@ func makeFileDescriptor() pref.FileDescriptor {
 						Name:     proto.String("id"),
 						JsonName: proto.String("id"),
 						Number:   proto.Int32(1),
-						Type:     descriptorpb.FieldDescriptorProto_Type(pref.Int32Kind).Enum(),
+						Type:     descriptorpb.FieldDescriptorProto_Type(protoreflect.Int32Kind).Enum(),
 					},
 					{
 						Name:     proto.String("title"),
 						JsonName: proto.String("title"),
 						Number:   proto.Int32(2),
-						Type:     descriptorpb.FieldDescriptorProto_Type(pref.StringKind).Enum(),
+						Type:     descriptorpb.FieldDescriptorProto_Type(protoreflect.StringKind).Enum(),
 					},
 				},
 			},
@@ -44,8 +44,8 @@ func makeFileDescriptor() pref.FileDescriptor {
 						Name:     proto.String("bar_map"),
 						JsonName: proto.String("bar_map"),
 						Number:   proto.Int32(1),
-						Label:    descriptorpb.FieldDescriptorProto_Label(pref.Repeated).Enum(),
-						Type:     descriptorpb.FieldDescriptorProto_Type(pref.MessageKind).Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_Label(protoreflect.Repeated).Enum(),
+						Type:     descriptorpb.FieldDescriptorProto_Type(protoreflect.MessageKind).Enum(),
 						TypeName: proto.String(".example.Bar.BarMapEntry"),
 					},
 				},
@@ -57,14 +57,14 @@ func makeFileDescriptor() pref.FileDescriptor {
 								Name:     proto.String("key"),
 								JsonName: proto.String("key"),
 								Number:   proto.Int32(1),
-								Label:    descriptorpb.FieldDescriptorProto_Label(pref.Optional).Enum(),
-								Type:     descriptorpb.FieldDescriptorProto_Type(pref.StringKind).Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_Label(protoreflect.Optional).Enum(),
+								Type:     descriptorpb.FieldDescriptorProto_Type(protoreflect.StringKind).Enum(),
 							}, {
 								Name:     proto.String("value"),
 								JsonName: proto.String("value"),
 								Number:   proto.Int32(2),
-								Label:    descriptorpb.FieldDescriptorProto_Label(pref.Optional).Enum(),
-								Type:     descriptorpb.FieldDescriptorProto_Type(pref.MessageKind).Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_Label(protoreflect.Optional).Enum(),
+								Type:     descriptorpb.FieldDescriptorProto_Type(protoreflect.MessageKind).Enum(),
 								TypeName: proto.String(".example.Foo"),
 							},
 						},
@@ -83,8 +83,8 @@ func makeFileDescriptor() pref.FileDescriptor {
 						Name:     proto.String("baz_list"),
 						JsonName: proto.String("baz_list"),
 						Number:   proto.Int32(1),
-						Label:    descriptorpb.FieldDescriptorProto_Label(pref.Repeated).Enum(),
-						Type:     descriptorpb.FieldDescriptorProto_Type(pref.MessageKind).Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_Label(protoreflect.Repeated).Enum(),
+						Type:     descriptorpb.FieldDescriptorProto_Type(protoreflect.MessageKind).Enum(),
 						TypeName: proto.String(".example.Foo"),
 					},
 				},
@@ -100,15 +100,15 @@ func makeFileDescriptor() pref.FileDescriptor {
 	return fd
 }
 
-func makeFooMsg(fd pref.FileDescriptor) *dynamicpb.Message {
+func makeFooMsg(fd protoreflect.FileDescriptor) *dynamicpb.Message {
 	fooMessageDescriptor := fd.Messages().ByName("Foo")
 	msg := dynamicpb.NewMessage(fooMessageDescriptor)
-	msg.Set(fooMessageDescriptor.Fields().ByName("id"), pref.ValueOfInt32(42))
-	msg.Set(fooMessageDescriptor.Fields().ByNumber(2), pref.ValueOfString("aloha"))
+	msg.Set(fooMessageDescriptor.Fields().ByName("id"), protoreflect.ValueOfInt32(42))
+	msg.Set(fooMessageDescriptor.Fields().ByNumber(2), protoreflect.ValueOfString("aloha"))
 	return msg
 }
 
-func makeBarMsg(fd pref.FileDescriptor) *dynamicpb.Message {
+func makeBarMsg(fd protoreflect.FileDescriptor) *dynamicpb.Message {
 	barMessageDescriptor := fd.Messages().ByName("Bar")
 	msg := dynamicpb.NewMessage(barMessageDescriptor)
 	mf := barMessageDescriptor.Fields().ByName("bar_map")
@@ -116,26 +116,26 @@ func makeBarMsg(fd pref.FileDescriptor) *dynamicpb.Message {
 
 	fooMsg := makeFooMsg(fd)
 
-	mp.Map().Set(pref.MapKey(pref.ValueOfString("key1")), pref.ValueOfMessage(fooMsg))
-	mp.Map().Set(pref.MapKey(pref.ValueOfString("key2")), pref.ValueOfMessage(fooMsg))
+	mp.Map().Set(protoreflect.MapKey(protoreflect.ValueOfString("key1")), protoreflect.ValueOfMessage(fooMsg))
+	mp.Map().Set(protoreflect.MapKey(protoreflect.ValueOfString("key2")), protoreflect.ValueOfMessage(fooMsg))
 	msg.Set(mf, mp)
 	return msg
 }
 
-func makeBazMsg(fd pref.FileDescriptor) *dynamicpb.Message {
+func makeBazMsg(fd protoreflect.FileDescriptor) *dynamicpb.Message {
 	bazMessageDescriptor := fd.Messages().ByName("Baz")
 	msg := dynamicpb.NewMessage(bazMessageDescriptor)
 	lf := bazMessageDescriptor.Fields().ByName("baz_list")
 	fooMsg := makeFooMsg(fd)
 	lst := msg.NewField(lf).List()
-	lst.Append(pref.ValueOf(fooMsg))
-	lst.Append(pref.ValueOf(fooMsg))
-	lst.Append(pref.ValueOf(fooMsg))
-	msg.Set(lf, pref.ValueOf(lst))
+	lst.Append(protoreflect.ValueOf(fooMsg))
+	lst.Append(protoreflect.ValueOf(fooMsg))
+	lst.Append(protoreflect.ValueOf(fooMsg))
+	msg.Set(lf, protoreflect.ValueOf(lst))
 	return msg
 }
 
-func useFooMsg(fd pref.FileDescriptor, data []byte) {
+func useFooMsg(fd protoreflect.FileDescriptor, data []byte) {
 	fooMessageDescriptor := fd.Messages().ByName("Foo")
 	msg := dynamicpb.NewMessage(fooMessageDescriptor)
 	if err := proto.Unmarshal(data, msg); err != nil {
@@ -143,7 +143,7 @@ func useFooMsg(fd pref.FileDescriptor, data []byte) {
 	}
 
 	// iterate over all fields
-	msg.Range(func(descriptor pref.FieldDescriptor, value pref.Value) bool {
+	msg.Range(func(descriptor protoreflect.FieldDescriptor, value protoreflect.Value) bool {
 		fmt.Printf("field: %v value: %v \n", descriptor.Name(), value)
 		return true
 	})
@@ -153,7 +153,7 @@ func useFooMsg(fd pref.FileDescriptor, data []byte) {
 	fmt.Printf("get %v \n", v)
 }
 
-func useBarMsg(fd pref.FileDescriptor, data []byte) {
+func useBarMsg(fd protoreflect.FileDescriptor, data []byte) {
 	barMessageDescriptor := fd.Messages().ByName("Bar")
 	msg := dynamicpb.NewMessage(barMessageDescriptor)
 	if err := proto.Unmarshal(data, msg); err != nil {
@@ -162,13 +162,13 @@ func useBarMsg(fd pref.FileDescriptor, data []byte) {
 	mp := msg.Get(barMessageDescriptor.Fields().ByName("bar_map")).Map()
 
 	// iterate over map field
-	mp.Range(func(key pref.MapKey, value pref.Value) bool {
+	mp.Range(func(key protoreflect.MapKey, value protoreflect.Value) bool {
 		fmt.Printf("key: %v value: %v  \n", key.String(), value.Message())
 		return true
 	})
 }
 
-func useBazMsg(fd pref.FileDescriptor, data []byte) {
+func useBazMsg(fd protoreflect.FileDescriptor, data []byte) {
 	bazMessageDescriptor := fd.Messages().ByName("Baz")
 	msg := dynamicpb.NewMessage(bazMessageDescriptor)
 	if err := proto.Unmarshal(data, msg); err != nil {
